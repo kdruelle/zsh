@@ -15,8 +15,7 @@ gitinfo () {
         if [ -d "$rd/.git" ]
         then
             branch="$(git --git-dir=$rd/.git --work-tree=$rd branch | grep \* | cut -d\  -f2-)"
-            h=$(echo $branch | md5sum | cut -d\  -f1 | head -c
-            2)
+            h=$(echo $branch | md5sum | cut -d\  -f1 | head -c 2)
             h=$(( 40 + (16#$h % 80) * 2 ))
             changed="$(git --git-dir=$rd/.git --work-tree=$rd diff --shortstat | grep -Eo '([0-9]+) files? changed.' | grep -Eo            '[0-9]+')"
             added="$(git --git-dir=$rd/.git --work-tree=$rd diff --shortstat | grep -Eo '([0-9]+) insertion' | grep -Eo '[0-9]+')"
