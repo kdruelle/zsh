@@ -34,7 +34,7 @@ function _list_bookmarks_details(){
     old_IFS=$IFS      # save the field separator
     IFS=$'\n'         # new field separator, the end of line
     tab=""
-    for line in $(cat $BOOKMARKS_FILE)
+    for line in $(cat $BOOKMARKS_FILE | sort -d)
     do
         local markname=$(echo "$line" | cut -d "|" -f 1 | xargs)
         local markpath=$(echo "$line" | cut -d "|" -f 2 | xargs)
@@ -47,7 +47,7 @@ function _list_bookmarks_details(){
 function _list_bookmarks(){
     old_IFS=$IFS      # save the field separator
     IFS=$'\n'         # new field separator, the end of line
-    for line in $(cat $BOOKMARKS_FILE)
+    for line in $(cat $BOOKMARKS_FILE | sort -d)
     do
         local markname=$(echo "$line" | cut -d "|" -f 1 | xargs)
         echo "${markname}"
