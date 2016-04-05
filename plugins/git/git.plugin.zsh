@@ -25,5 +25,39 @@ gitinfo () {
     done
 }
 
+gitswitchall () {
 
+    branch_name=$1
+    [ $# -eq 2 ] && dir=$2  || dir=.
+    dir=${dir:A}
+
+    for d in $dir/*(/)
+    do
+        rd=${d:A}
+        if [ -d "$rd/.git" ]
+        then
+            git --git-dir=$rd/.git --work-tree=$rd fetch --all
+            branch=$(git --git-dir=$rd/.git --work-tree=$rd branch --all | grep -P "^\*?[ ]+$branch_name" | sed 's/\*//' | xargs)
+            if [ -z $branch ]
+            then
+                remote_branch=$(git --git-dir=$rd/.git --work-tree=$rd branch --all | egrep "$branch_name" | xargs | sed 's/remotes\///')
+                if [ -n "$remote_branch" ]
+                then
+                    echo "remote branch .$remote_branch."
+                    git --git-dir=$rd/.git --work-tree=$rd checkout -t $remote_branch
+                    continue
+                fi
+                branch=$(git --git-dir=$rd/.git --work-tree=$rd branch --all | grep -P "^\*?[ ]+$branch_name" | xargs)
+            fi
+
+            if [ -z $branch ]
+            then
+                git --git-dir=$rd/.git --work-tree=$rd checkout master
+            else
+                git --git-dir=$rd/.git --work-tree=$rd checkout $branch
+            fi
+        fi
+    done
+
+}
 
