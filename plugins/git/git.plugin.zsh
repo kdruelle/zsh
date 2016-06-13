@@ -4,25 +4,39 @@
 
 gitinfo () {
     local branch
+    local tag
     local h
     local dir
     local rd
+    local line
+    local output
     [ $# -eq 1 ] && dir=$1  || dir=.
-    printf "%s                                    : %s %s (%s)    \x1b[33m%s\x1b[0m, \x1b[32m%s\x1b[0m, \x1b[31m%s\x1b[0m\n\n" "repo"    "branch" "        " " hash " "  M" "  +" "  -"
+    output="\e[1mRepo\t\x1b[000000;1mBranch\x1b[0m\t\x1b[1mTag\t( Hash )\t\x1b[33;1m  M\t\x1b[32;1m +\t\x1b[31;1m-\n\n"
     for d in $dir/*(/)
     do
         rd=$(readlink -f $d)
         if [ -d "$rd/.git" ]
         then
+            line="\e[0m$(basename $rd)"
             branch="$(git --git-dir=$rd/.git --work-tree=$rd branch | grep \* | cut -d\  -f2-)"
             h=$(echo $branch | md5sum | cut -d\  -f1 | head -c 2)
             h=$(( 40 + (16#$h % 80) * 2 ))
-            changed="$(git --git-dir=$rd/.git --work-tree=$rd diff --shortstat | grep -Eo '([0-9]+) files? changed.' | grep -Eo            '[0-9]+')"
+            line="${line}\t\e[38;5;${h}m${branch}\x1b[0m"
+            tag="$(git --git-dir=$rd/.git --work-tree=$rd describe --tags --exact-match 2> /dev/null)"
+            if [ -z $tag ]
+            then
+                tag="✗"
+            fi
+            line="${line}\t\x1b[0m${tag}"
+            line="${line}\t$(printf "(%.6s)" $(git --git-dir=$rd/.git rev-parse HEAD))"
+            changed="$(git --git-dir=$rd/.git --work-tree=$rd diff --shortstat | grep -Eo '([0-9]+) files? changed.' | grep -Eo '[0-9]+')"
             added="$(git --git-dir=$rd/.git --work-tree=$rd diff --shortstat | grep -Eo '([0-9]+) insertion' | grep -Eo '[0-9]+')"
             deleted="$(git --git-dir=$rd/.git --work-tree=$rd diff --shortstat | grep -Eo '([0-9]+) deletion' | grep -Eo '[0-9]+')"
-            printf "%-40s: \x1b[38;5;%dm%-30s\x1b[0m%s (%.6s) \x1b[33m%3d\x1b[0m, \x1b[32m%3d\x1b[0m, \x1b[31m%3d\x1b[0m\n" "$(basename $rd)" "$h" "$branch" " " "$(git --git-dir=$rd/.git rev-parse HEAD)" "$changed" "$added" "$deleted"
+            line="${line}\t$(printf "\x1b[00;33m%3d\t\x1b[00;32m%3d\t\x1b[31m%3d" "$changed" "$added" "deleted")"
+            output="${output}${line}\n"
         fi
     done
+    echo $output | column -tes $'\t'
 }
 
 gitswitchall () {
