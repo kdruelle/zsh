@@ -53,7 +53,7 @@ function _backup-ts()                    # timestamps operations (`ts` to get cu
 
 
 
-function rm()                    # safe rm with timestamped backup
+function rmb()                    # safe rm with timestamped backup
 {
     if [ $# -gt 0 ]; then
         local backup;
@@ -163,7 +163,11 @@ function back()                    # list all backuped files
         files=( $(find $RM_BACKUP_DIR/$back[to_restore] -type f) )
         if [ ! -z "$files" ]; then
             for f in $files; do echo $f; done | command sed -r -e "s|$RM_BACKUP_DIR/$back[to_restore]||g" -e "s|/home/$USER|~|g"
-                read -q "?Restore ? (Y/n): " && cp --backup=t -R ${RM_BACKUP_DIR/$back[to_restore]/*(:A)} / # create file.~1~ if file already exists
+                echo;
+                dir="$RM_BACKUP_DIR/$back[to_restore]"
+                echo "dir = $dir/"
+                echo ${dir/*(:A)}
+                #read -q "?Restore ? (Y/n): " && cp --backup=t -R ${RM_BACKUP_DIR/$back[to_restore]/*(:A)} / # create file.~1~ if file already exists
             echo;
         else
             echo "No such back"
