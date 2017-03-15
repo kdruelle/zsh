@@ -7,6 +7,7 @@ setopt inc_append_history
 setopt share_history
 setopt hist_ignore_dups         # ignore dups in history
 setopt hist_expire_dups_first   # remove all dubs in history when full
+setopt histignorespace
 
 function up-line-or-search-prefix () # smart up search (search in history anything matching before the cursor)
 {
