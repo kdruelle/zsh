@@ -27,11 +27,27 @@ _bookmark-delete(){
     esac
 }
 
+(( $+functions[_bookmark-rename] )) ||
+_bookmark-rename(){
+    local curcontext=$curcontext state line ret=1
+    declare -A opt_args
+    _arguments -w -C -S -s \
+        '1:: :->oldname'\
+        '2:: :_guard "([^-]?#|)" new name'
+
+    case $state in
+        oldname)
+            _values 'current name' $(_list_bookmarks)
+            ;;
+    esac
+}
+
 _bookmark_commands(){
     local -a main_commands
     main_commands=(
         add:'add new bookmark'
         delete:'delete existing bookmark'
+        rename:'rename an existing bookmark'
     )
     integer ret=1
     _describe -t main-commands 'commands' main_commands && ret=0

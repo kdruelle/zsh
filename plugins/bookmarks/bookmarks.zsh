@@ -68,15 +68,41 @@ function _name_bookmarks(){
 }
 
 function _bookmark_exists(){
-    `cat $BOOKMARKS_FILE | grep -oe "[[:space:]]*test[[:space:]]*"`
+    exists=1
+    void=$(cat $BOOKMARKS_FILE | grep -oe "^[[:space:]]*$1[[:space:]]*|")
     return $?
 }
 
 function _get_bookmark_path(){
-    return $(cat $BOOKMARKS_FILE | grep -e "[[:space:]]*$1[[:space:]]*" | cut -d "|" -f 2 | xargs)
+    echo $(cat $BOOKMARKS_FILE | grep -e "^[[:space:]]*$1[[:space:]]*|" | cut -d "|" -f 2 | xargs)
+}
+
+function _rename_bookmark(){
+    local oldname=$1
+    local newname=$2
+    
+    if [[ ! _bookmark_exists(${oldname}) ]]; then
+        echo "Bookmark $oldname doesn't exists"
+        return
+    fi
+
+    if [[ ! _bookmark_exists(${newname}) ]]; then
+        echo "Bookmark $newname already exists, choose a different name"
+        return;
+    fi
+
+    bookmark_path=$(_get_bookmark_path ${oldname})
+    sed -i -r "/^[[:space:]]*${bookmark}[[:space:]]*\\|/d" $BOOKMARKS_FILE
+    echo "${newname} | ${bookmark_path}" >> $BOOKMARKS_FILE
+    _load_bookmarks
 }
 
 function _add_bookmark(){
+    if [[ ! _bookmark_exists(${1}) ]]; then
+        echo "Bookmark $1 already exists, choose a different name"
+        return;
+    fi
+
     if [ $# = 1 ]; then
         echo "$1 | $(pwd)" >> $BOOKMARKS_FILE
     else
@@ -109,6 +135,10 @@ function bookmark() {
         -d|--delete|delete)
             shift
             _delete_bookmark $@
+            ;;
+        -r|--rename|rename)
+            shift
+            _rename_bookmark $@
             ;;
     esac
 }
