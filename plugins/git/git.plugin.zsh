@@ -90,7 +90,7 @@ gitswitchall () {
 
 
 function fshow() {
-  git log --graph --all --color=always \
+  git log --graph --color=always \
       --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
   fzf --ansi --height=30 --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
       --bind "ctrl-m:execute:
@@ -105,7 +105,17 @@ function fshow() {
 function fbr() {
   local branches branch
   branches=$(git branch -vv -a --color=always) &&
-  branch=$(echo "$branches" | fzf --ansi --height=20 +m) &&
-  git checkout $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
+  branch=$(echo "$branches" | fzf --ansi --height=20 +m)
+  brname=$(echo "$branch" | awk '{print $1}' | sed "s/.* //")
+  echo $brname
+  if [[ "$brname" =~ ^remotes ]]; then
+      git checkout -t $(echo $brname | sed "s/remotes\///g")
+  else
+      git checkout $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
+  fi
 }
+
+
+
+
 
