@@ -89,15 +89,23 @@ gitswitchall () {
 }
 
 
-function gitfzfgra() {
-  git log --graph --color=always \
+function fshow() {
+  git log --graph --all --color=always \
       --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
-  fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
+  fzf --ansi --height=30 --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
       --bind "ctrl-m:execute:
                 (grep -o '[a-f0-9]\{7\}' | head -1 |
                 xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
-                {}
-FZF-EOF"
+                {} FZF-EOF"
 }
 
+
+# fbr - checkout git branch
+
+function fbr() {
+  local branches branch
+  branches=$(git branch -vv -a --color=always) &&
+  branch=$(echo "$branches" | fzf --ansi --height=20 +m) &&
+  git checkout $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
+}
 
