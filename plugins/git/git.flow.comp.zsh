@@ -171,6 +171,7 @@ __git-flow-hotfix ()
             subcommands=(
                 'start:Start a new hotfix branch.'
                 'finish:Finish a hotfix branch.'
+                'track:Checkout remote feature branch.'
                 'list:List all your hotfix branches. (Alias to `git flow hotfix`)'
             )
             _describe -t commands 'git flow hotfix' subcommands
@@ -205,6 +206,12 @@ __git-flow-hotfix ()
                         {'--notag','-n'}"[Don't tag this release]" \
                         {'--nobackmerge','-b'}"[Don't back-merge master, or tag if applicable, in develop]" \
                         ':hotfix:__git_flow_hotfix_list'
+                ;;
+                
+                (track)
+                    _arguments \
+                        --showcommands'[Show git commands while executing them]' \
+                        ':hotfix:__git_flow_remote_hotfix_list'\
                 ;;
 
                 *)
@@ -381,6 +388,17 @@ __git_flow_hotfix_list ()
     _wanted hotfixes expl 'hotfix' compadd $hotfixes
 }
 
+__git_flow_remote_hotfix_list ()
+{
+    local expl
+    declare -a hotfixes
+
+    hotfixes=(${${(f)"$(_call_program rhotfixes git branch -r | grep -E "hotfix/[-A-Za-z0-9\.]+" | sed -r 's#\s*origin/hotfix/([-A-Za-z0-9\.]+).*#\1#g' 2> /dev/null)"}})
+    __git_command_successful || return
+
+    _wanted hotfixes expl 'hotfix' compadd $hotfixes
+}
+
 __git_branch_names () {
     local expl
     declare -a branch_names
@@ -399,6 +417,7 @@ __git_command_successful () {
     return 0
 }
 
-zstyle ':completion:*:*:git:*' user-commands flow:'provide high-level repository operations'
 
+zstyle ':completion:*:*:git:*' user-commands \
+    flow:'provide high-level repository operations' \
 
