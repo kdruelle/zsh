@@ -27,6 +27,16 @@ __kgit-install-imerge(){
     fi
 }
 
+__kgit-install-branch-status(){
+    curl https://raw.githubusercontent.com/alexdavid/git-branch-status/v1.0.0/git-branch-status > /tmp/git-branch-status
+    chmod +x /tmp/git-branch-status
+    if [[ "$UID" == "0" ]]; then
+        mv /tmp/git-branch-status /usr/local/bin/
+    else
+        sudo mv /tmp/git-branch-status /usr/local/bin/
+    fi
+}
+
 __kgit-init-cleanup-branch(){
     zstyle -s ':completion:*:*:git:*' user-commands user_commands "#"
     user_commands+="#cleanup-branch:cleanup old branches"
@@ -39,15 +49,23 @@ __kgit-init-imerge(){
     zstyle ':completion:*:*:git:*' user-commands ${(@s/#/)user_commands}
 }
 
+__kgit-init-branch-status(){
+    zstyle -s ':completion:*:*:git:*' user-commands user_commands "#"
+    user_commands+="#branch-status:give you an overview of your branches"
+    zstyle ':completion:*:*:git:*' user-commands ${(@s/#/)user_commands}
+}
+
 
 kgit-plugin-init(){
     echo "kgit Plugin Initialisation"
     __kgit_installed git-cleanup-branch || __kgit-install-cleanup-branch
     __kgit_installed git-imerge || __kgit-install-imerge
+    __kgit_installed git-branch-status || __kgit-install-branch-status
 }
 
 __kgit_installed git-cleanup-branch && __kgit-init-cleanup-branch
 __kgit_installed git-imerge && __kgit-init-imerge
+__kgit_installed git-branch-status && __kgit-init-branch-status
 
 gitinfo () {
     local branch

@@ -97,7 +97,7 @@ _git-imerge ()
     esac
 }
 
-__git-imerge-branche(){
+__git-imerge-branch(){
     local curcontext="$curcontext" state line
     typeset -A opt_args
 
