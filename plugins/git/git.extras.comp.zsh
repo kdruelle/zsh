@@ -254,34 +254,37 @@ _git-bug() {
     esac
 }
 
+zstyle -s ':completion:*:*:git:*' user-commands user_commands "#"
 
-zstyle ':completion:*:*:git:*' user-commands \
-    changelog:'populate changelog file with commits since the previous tag' \
-    contrib:'display author contributions' \
-    count:'count commits' \
-    delete-branch:'delete local and remote branch' \
-    delete-submodule:'delete submodule' \
-    delete-tag:'delete local and remote tag' \
-    extras:'git-extras' \
-    graft:'merge commits from source branch to destination branch' \
-    squash:'merge commits from source branch into the current one as a single commit' \
-    feature:'create a feature branch' \
-    refactor:'create a refactor branch' \
-    bug:'create a bug branch' \
-    summary:'repository summary' \
-    effort:'display effort statistics' \
-    repl:'read-eval-print-loop' \
-    commits-since:'list commits since a given date' \
-    release:'release commit with the given tag' \
-    alias:'define, search and show aliases' \
-    ignore:'add patterns to .gitignore' \
-    info:'show info about the repository' \
-    create-branch:'create local and remote branch' \
-    fresh-branch:'create empty local branch' \
-    undo:'remove the latest commit' \
-    setup:'setup a git repository' \
-    touch:'one step creation of new files' \
-    obliterate:'Completely remove a file from the repository, including past commits and tags' \
-    local-commits:'list unpushed commits on the local branch' \
+user_commands+="#changelog:populate changelog file with commits since the previous tag\
+#contrib:display author contributions\
+#count:count commits\
+#delete-branch:delete local and remote branch\
+#delete-submodule:delete submodule\
+#delete-tag:delete local and remote tag\
+#extras:git-extras\
+#graft:merge commits from source branch to destination branch\
+#squash:merge commits from source branch into the current one as a single commit\
+#feature:create a feature branch\
+#refactor:create a refactor branch\
+#bug:create a bug branch\
+#summary:repository summary\
+#effort:display effort statistics\
+#repl:read-eval-print-loop\
+#commits-since:list commits since a given date\
+#release:release commit with the given tag\
+#alias:define, search and show aliases\
+#ignore:add patterns to .gitignore\
+#info:show info about the repository\
+#create-branch:create local and remote branch\
+#fresh-branch:create empty local branch\
+#undo:remove the latest commit\
+#setup:setup a git repository\
+#touch:one step creation of new files\
+#obliterate:Completely remove a file from the repository, including past commits and tags\
+#local-commits:list unpushed commits on the local branch"
+
+zstyle ':completion:*:*:git:*' user-commands ${(@s/#/)user_commands}
+
 
 

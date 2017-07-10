@@ -1,6 +1,53 @@
 
 
+__kgit_installed(){
+    if [ $# -eq 1 ]
+    then
+        [ "$(type $1)" = "$1 not found" ] || return 0 && return 1
+    fi
+}
 
+__kgit-install-cleanup-branch(){
+    wget -O /tmp/git-cleanup-branch https://github.com/ne-sachirou/git-cleanup-branch/releases/download/v0.1.2/git-cleanup-branch-linux-x86_64
+    chmod +x /tmp/git-cleanup-branch
+    if [[ "$UID" == "0" ]]; then
+        mv /tmp/git-cleanup-branch /usr/local/bin/
+    else
+        sudo mv /tmp/git-cleanup-branch /usr/local/bin/
+    fi
+}
+
+__kgit-install-imerge(){
+    curl https://raw.githubusercontent.com/mhagger/git-imerge/v1.0.0/git-imerge > /tmp/git-imerge
+    chmod +x /tmp/git-imerge
+    if [[ "$UID" == "0" ]]; then
+        mv /tmp/git-imerge /usr/local/bin/
+    else
+        sudo mv /tmp/git-imerge /usr/local/bin/
+    fi
+}
+
+__kgit-init-cleanup-branch(){
+    zstyle -s ':completion:*:*:git:*' user-commands user_commands "#"
+    user_commands+="#cleanup-branch:cleanup old branches"
+    zstyle ':completion:*:*:git:*' user-commands ${(@s/#/)user_commands}
+}
+
+__kgit-init-imerge(){
+    zstyle -s ':completion:*:*:git:*' user-commands user_commands "#"
+    user_commands+="#imerge:Perform a merge between two branches incrementally. If conflicts are encountered, figure out exactly which pairs of commits conflict, and present the user with one pairwise conflict at a time for resolution."
+    zstyle ':completion:*:*:git:*' user-commands ${(@s/#/)user_commands}
+}
+
+
+kgit-plugin-init(){
+    echo "kgit Plugin Initialisation"
+    __kgit_installed git-cleanup-branch || __kgit-install-cleanup-branch
+    __kgit_installed git-imerge || __kgit-install-imerge
+}
+
+__kgit_installed git-cleanup-branch && __kgit-init-cleanup-branch
+__kgit_installed git-imerge && __kgit-init-imerge
 
 gitinfo () {
     local branch
@@ -116,6 +163,9 @@ function fbr() {
 }
 
 
+source "$(dirname $0)/git.flow.comp.zsh"
+source "$(dirname $0)/git.extras.comp.zsh"
+source "$(dirname $0)/git.imerge.comp.zsh"
 
 
 

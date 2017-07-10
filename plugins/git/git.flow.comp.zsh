@@ -417,7 +417,9 @@ __git_command_successful () {
     return 0
 }
 
+zstyle -s ':completion:*:*:git:*' user-commands user_commands "#"
 
-zstyle ':completion:*:*:git:*' user-commands \
-    flow:'provide high-level repository operations' \
+user_commands+="#flow:provide high-level repository operations"
+
+zstyle ':completion:*:*:git:*' user-commands ${(@s/#/)user_commands}
 
