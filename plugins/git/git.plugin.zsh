@@ -67,6 +67,14 @@ __kgit_installed git-cleanup-branch && __kgit-init-cleanup-branch
 __kgit_installed git-imerge && __kgit-init-imerge
 __kgit_installed git-branch-status && __kgit-init-branch-status
 
+__kgit_realpath(){
+    if [[ "Linux" == $(uname) ]]; then
+        readlink -f "$1"
+    elif [[ "Darwin" == $(uname) ]]; then
+        perl -MCwd -e 'print Cwd::abs_path shift' "$1"
+    fi
+}
+
 gitinfo () {
     local branch
     local tag
@@ -80,7 +88,7 @@ gitinfo () {
     output="Repo\tBranch\tTag\t( Hash )\t  M\t  +\t  -\n\n"
     for d in $dir/*(/)
     do
-        rd=$(readlink -f $d)
+        rd=$(__kgit_realpath "$d")
         if [ -d "$rd/.git" ]
         then
             #line="\e[0m$(basename $rd)"
