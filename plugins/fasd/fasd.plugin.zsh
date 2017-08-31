@@ -1,17 +1,18 @@
 
 __fasd_installed(){
+    if [ ! $(echo "$PATH" | grep -q "$HOME/.bin") ]; then
+        export PATH="$PATH:$HOME/.bin"
+    fi
     [ "$(type fasd)" = "fasd not found" ] || return 0 && return 1
 }
 
 
 fasd-install(){
-    if [[ "$UID" == "0" ]] then;
-        curl https://raw.githubusercontent.com/clvv/fasd/1.0.1/fasd > /usr/local/bin/fasd
-        chmod +x /usr/local/bin/fasd
-    else
-        sudo curl https://raw.githubusercontent.com/clvv/fasd/1.0.1/fasd > /usr/local/bin/fasd
-        sudo chmod +x /usr/local/bin/fasd
+    if [ ! -d "$HOME/.bin" ]; then
+        mkdir -p "$HOME/.bin"
     fi
+    curl https://raw.githubusercontent.com/clvv/fasd/1.0.1/fasd > "$HOME/.bin/fasd"
+    chmod +x "$HOME/.bin/fasd"
 }
 
 __fasd_init(){
