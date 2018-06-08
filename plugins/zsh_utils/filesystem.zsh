@@ -33,7 +33,7 @@ function pc()
 # find arg1 in all files from arg2 or .
 function ft()
 {
-    command find ${2:=.} -type f -exec grep --color=always -InH -e "$1" {} +; # I (ignore binary) n (line number) H (print fn each line)
+    command find ${${@:2}:=.} -type f -exec grep --color=always -InH -e "$1" {} +; # I (ignore binary) n (line number) H (print fn each line)
 }
 
 # faster find allowing easier parameters in disorder
