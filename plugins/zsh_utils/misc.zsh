@@ -15,7 +15,7 @@ function show-aliases()
 }
 
 # simple calculator
-function c()
+function calc()
 {
     echo $(($@));
 }
